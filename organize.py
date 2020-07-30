@@ -3,7 +3,7 @@ import os
 from tkinter import Button, Tk, filedialog, messagebox
 from tkinter.filedialog import askdirectory
 import shutil
-
+import datetime
 #Creating a Function that Classify the Files
 def classify(extention):
     Videos = "avi mpg mpe mpeg asf wmv mov qt rm mp4 flv m4v webm ogv ogg mkv ts tsv".split()
@@ -12,7 +12,7 @@ def classify(extention):
     Software = "exe msi".split()
     Documents = "doc pdf ppt pps docx pptx csv xlsx".split()
     Photos = "JPG PNG TIF JPEG GIF TIFF PSD EPS AI".lower().split()
-    categories = {'Videos':Videos,'Audio':Audio,'Compressed':Compressed,"Software":Software,'Documents':Documents,'Photos':Photos}
+    categories = {'Video':Videos,'Audio':Audio,'Compressed':Compressed,"Software":Software,'Documents':Documents,'Photos':Photos}
     for cat,ext in categories.items():
         if extention in ext:
             return cat
@@ -34,7 +34,7 @@ def organize(path):
         if os.path.isdir(file) == True:
             folders.append(str(file))
     checkFolders(folders)
-    categoryFolders = ['Videos','Music','Documents','Compressed','Software','UnCategorized']
+    categoryFolders = ['Videos','Music','Documents','Compressed','Software','UnCategorized','Photos']
     for file in files:
         if os.path.isfile(file) == True:
             filename = str(file)
@@ -52,7 +52,7 @@ def checkFolders(folders):
     if 'Folders' not in folders:
         os.mkdir('Folders')
     if 'Videos' not in folders:
-        os.mkdir('Videos')
+        os.mkdir('Video')
     if 'Music' not in folders:
         os.mkdir('Music')
     if 'Documents' not in folders:
@@ -69,6 +69,22 @@ def checkFolders(folders):
 #Popup MSG Box after Complete organizing
 def popup():
     messagebox.showinfo("Organizing Completed Successfuly !","Successfuly !")
+    askformore()
+
+def askformore():
+    response = messagebox.askyesno("Do You Want more Help?", 'Do you want to add all categorized folder to one folder with the date of today and move them to another place?')
+    if response == 1:
+        p = askdirectory(title = 'Select Folder To Move the files There')
+        os.mkdir("Organized Files "+str(datetime.date.today()))
+        files = os.listdir()
+        for file in files:
+            if str(file) == "Organized Files "+str(datetime.date.today()):
+                continue
+            shutil.move(file,os.path.join(os.getcwd(),"Organized Files "+str(datetime.date.today())))
+        file = os.listdir()
+        print(p)
+        shutil.move("Organized Files "+str(datetime.date.today()),p)
+        messagebox.showinfo("Moved","Successfuly !")
 
 #Creating new Form From Tkinter GUI
 root = Tk()
